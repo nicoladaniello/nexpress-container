@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  node:
+    image: node:10
+    user: node
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./front-end:/home/node/app
+    restart: always
+    ports:
+      - "80:3000"
+    expose:
+      - "3000"
+    command: "npm run dev"
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    env_file: ./.env
+
+  wordpress:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    restart: always
+    env_file: ./.env
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: $MYSQL_USER
+      WORDPRESS_DB_PASSWORD: $MYSQL_PASSWORD
+      WORDPRESS_DB_NAME: $MYSQL_DATABASE
+    volumes:
+      - ./wordpress:/var/www/html
+
+volumes:
+  db_data: {}
