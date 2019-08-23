@@ -28,6 +28,7 @@ services:
     build: .
     depends_on:
       - db
+    command: bash -c 'install_wordpress && apache2-foreground'
     ports:
       - "8000:8000"
     restart: always
@@ -39,6 +40,7 @@ services:
       WORDPRESS_DB_NAME: $MYSQL_DATABASE
     volumes:
       - ./wordpress:/var/www/html
+      - ./docker/install_wordpress.sh:/usr/local/bin/install_wordpress
 
 volumes:
   db_data: {}
